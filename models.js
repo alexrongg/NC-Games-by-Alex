@@ -15,7 +15,6 @@ exports.selectReview = (reviewID) => {
                 status: 404
             });
         }else {
-          review.rows[0].created_at = `${new Date(1610964020514)}`
             return review.rows[0];  
         }; 
     });
