@@ -25,3 +25,14 @@ describe("NC games app", () => {
         })
     });
 });
+
+describe("NC games Error handling", () => {
+    test("STATUS 404, responds with a message of `invalid path` when requested a invalid path", () => {
+        return request(app)
+        .get("/app/toiletpaper")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("Invalid path")
+        });
+    });
+});
