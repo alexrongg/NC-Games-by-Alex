@@ -1,8 +1,8 @@
-const { requestCategories} = require("./models");
+const { selectCategories} = require("./models");
 const { request } = require("./app")
 
 exports.getCategories = (req, res, next) => {
-    requestCategories().then((data) => {
+    selectCategories().then((data) => {
         res.status(200).send(data); 
     })
     .catch((err) => {

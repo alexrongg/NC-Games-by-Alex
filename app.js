@@ -8,6 +8,7 @@ app.use("*", (req, res) => {
     res.status(404).send({msg: "Invalid path"});
 });
 
+
 app.use((err, req, res, next) => {
     res.status(500).send({msg: "Internal server error"});
 });
