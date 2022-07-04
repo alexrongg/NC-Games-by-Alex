@@ -28,10 +28,10 @@ describe("NC games app", () => {
         test("Respond with status 200 and a body full of properties" , () => {
             const REVIEW_ID = 1
             return request(app)
-            .get(`/api/parks/${REVIEW_ID}`)
+            .get(`/api/reviews/${REVIEW_ID}`)
             .expect(200)
             .then(({ body }) => {
-                expect(body[0]).toEqual({
+                expect(body.review).toEqual({
                     review_id: REVIEW_ID,
                     title: "Agricola",
                     designer: 'Uwe Rosenberg',
@@ -39,7 +39,7 @@ describe("NC games app", () => {
                     review_img_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
                     review_body: 'Farmyard fun!',
                     category: 'euro game',
-                    created_at: new Date(1610964020514),
+                    created_at: `${new Date(1610964020514)}`,
                     votes: 1
                 });
             });
