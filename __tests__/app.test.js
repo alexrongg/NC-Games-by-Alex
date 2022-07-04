@@ -50,10 +50,26 @@ describe("NC games app", () => {
 describe("NC games Error handling", () => {
     test("STATUS 404, responds with a message of `invalid path` when requested a invalid path", () => {
         return request(app)
-        .get("/app/toiletpaper")
+        .get("/api/toiletpaper")
         .expect(404)
         .then(({body}) => {
             expect(body.msg).toBe("Invalid path")
+        });
+    });
+    test("STATUS 404, responds with a message of `Invalid review ID` when requested a invalid review ID", () => {
+        return request(app)
+        .get("/api/reviews/12312344")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("Invalid review ID")
+        });
+    });
+    test("STATUS 404, responds with a error message when inputted wrong syntax as review ID", () => {
+        return request(app)
+        .get("/api/reviews/bobby")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("Invalid Syntax of review ID, need to be a number")
         });
     });
 });
