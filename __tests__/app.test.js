@@ -95,4 +95,33 @@ describe("NC games Error handling", () => {
             expect(body.msg).toBe("Invalid Syntax of review ID, need to be a number")
         });
     });
+    test("STATUS 404, PATCH: responds with a error message when inputted wrong syntax as review ID", () => {
+        return request(app)
+        .patch("/api/reviews/bobby")
+        .send({ inc_votes: 25 })
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("Invalid Syntax of review ID, need to be a number")
+        });
+    });
+    test("STATUS 404, PATCH: responds with a error message when votes go below existing votes", () => {
+        return request(app)
+        .patch("/api/reviews/2")
+        .send({ inc_votes: -50 })
+        .expect(400)
+        .then(({body}) => {
+            console.log(body)
+            expect(body.msg).toBe(`Patched object must have the form of { inc_votes: newVote } where newVote indicates the change in votes. Votes cannot go below 0`)
+        });
+    });
+    test("STATUS 404, PATCH: responds with a error message when inputted object has wrong syntax", () => {
+        return request(app)
+        .patch("/api/reviews/2")
+        .send({ toiletpaperwoo: 50 })
+        .expect(400)
+        .then(({body}) => {
+            console.log(body)
+            expect(body.msg).toBe(`Patched object must have the form of { inc_votes: newVote } where newVote indicates the change in votes. Votes cannot go below 0`)
+        });
+    });
 });

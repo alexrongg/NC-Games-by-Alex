@@ -26,6 +26,13 @@ exports.updateReview = (review_id, inc_votes) => {
     FROM reviews 
     WHERE review_id = $1;`, [review_id, inc_votes])
     .then((review) => {
-        return review.rows
+        if (review.rows[0].votes === null || review.rows[0].votes < 0) {
+            return Promise.reject({
+                msg : `Patched object must have the form of { inc_votes: newVote } where newVote indicates the change in votes. Votes cannot go below 0`,
+                status : 400
+            });
+        } else {
+          return review.rows;
+        }l
     });
 };
