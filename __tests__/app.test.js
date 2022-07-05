@@ -40,7 +40,8 @@ describe("NC games app", () => {
                     review_body: 'Farmyard fun!',
                     category: 'euro game',
                     created_at: "2021-01-18T10:00:20.514Z",
-                    votes: 1
+                    votes: 1,
+                    comment_count: "0"
                 });
             });
         })

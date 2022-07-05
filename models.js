@@ -7,7 +7,16 @@ exports.selectCategories = () => {
 };
 
 exports.selectReview = (reviewID) => {
-    return connection.query("SELECT * FROM reviews WHERE review_id = $1;", [reviewID])
+    return connection.query(`
+    SELECT reviews.review_id, reviews.title, reviews.designer, reviews.owner,
+    reviews.review_img_url, reviews.review_body, reviews.category, reviews.created_at,
+    reviews.votes, 
+    COUNT(comments.review_id) AS comment_count 
+    FROM reviews 
+    LEFT JOIN comments
+    ON comments.review_id = reviews.review_id
+    WHERE reviews.review_id = $1
+    GROUP BY reviews.review_id;`, [reviewID])
     .then((review) => {
         if (review.rows.length === 0) {
             return Promise.reject({
