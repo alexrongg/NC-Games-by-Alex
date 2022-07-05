@@ -45,6 +45,29 @@ describe("NC games app", () => {
             });
         })
     });
+    describe("PATCH /api/reviews/:review_id", () => {
+        test("Respond with status 200 and a body of the updated review where votes has increased by 25" , () => {
+            const voteUpdate = { inc_votes: 25 };
+            const REVIEW_ID = 2;
+            return request(app)
+            .patch(`/api/reviews/${REVIEW_ID}`)
+            .send(voteUpdate)
+            .expect(200)
+            .then(( {body} ) => {
+                expect(body.review[0]).toEqual({
+                    review_id: REVIEW_ID,
+                    title: 'Jenga',
+                    designer: 'Leslie Scott',
+                    owner: 'philippaclaire9',
+                    review_img_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+                    review_body: 'Fiddly fun for all the family',
+                    category: 'dexterity',
+                    created_at: new Date(1610964101251).toISOString(),
+                    votes: 30
+                });
+            });
+        })
+    });
 });
 
 describe("NC games Error handling", () => {
@@ -70,6 +93,35 @@ describe("NC games Error handling", () => {
         .expect(400)
         .then(({body}) => {
             expect(body.msg).toBe("Invalid Syntax of review ID, need to be a number")
+        });
+    });
+    test("STATUS 404, PATCH: responds with a error message when inputted wrong syntax as review ID", () => {
+        return request(app)
+        .patch("/api/reviews/bobby")
+        .send({ inc_votes: 25 })
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("Invalid Syntax of review ID, need to be a number")
+        });
+    });
+    test("STATUS 404, PATCH: responds with a error message when votes go below existing votes", () => {
+        return request(app)
+        .patch("/api/reviews/2")
+        .send({ inc_votes: -50 })
+        .expect(400)
+        .then(({body}) => {
+            console.log(body)
+            expect(body.msg).toBe(`Patched object must have the form of { inc_votes: newVote } where newVote indicates the change in votes. Votes cannot go below 0`)
+        });
+    });
+    test("STATUS 404, PATCH: responds with a error message when inputted object has wrong syntax", () => {
+        return request(app)
+        .patch("/api/reviews/2")
+        .send({ toiletpaperwoo: 50 })
+        .expect(400)
+        .then(({body}) => {
+            console.log(body)
+            expect(body.msg).toBe(`Patched object must have the form of { inc_votes: newVote } where newVote indicates the change in votes. Votes cannot go below 0`)
         });
     });
 });
