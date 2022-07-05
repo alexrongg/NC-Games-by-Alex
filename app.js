@@ -1,4 +1,4 @@
-const { getCategories, getReview, patchReview } = require("./controllers");
+const { getCategories, getReview, patchReview, getUsers } = require("./controllers");
 const express = require("express");
 const app = express();
 app.use(express.json());
@@ -6,6 +6,7 @@ app.use(express.json());
 app.get("/api/categories", getCategories);
 app.get("/api/reviews/:review_id", getReview);
 app.patch("/api/reviews/:review_id", patchReview);
+app.get("/api/users", getUsers);
 
 app.use("*", (req, res) => {
     res.status(404).send({msg: "Invalid path"});
@@ -16,7 +17,7 @@ app.use((err, req, res, next) => {
         res.status(404).send(err)
     } else if (err.code === "22P02") {
         res.status(400).send({ msg: "Invalid Syntax of review ID, need to be a number"})
-    } else if (err.msg === "Patched object must have the form of { inc_votes: newVote } where newVote indicates the change in votes. Votes cannot go below 0") {
+    } else if (err.msg) {
         res.status(400).send(err)
     } else {
         next(err);
