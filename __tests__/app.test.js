@@ -75,10 +75,10 @@ describe("NC games app", () => {
             .expect(200)
             .then(({body}) => {
                 expect(body).toHaveLength(4);
-                body.forEach((category) => {
-                    expect(category).toHaveProperty("username"),
-                    expect(category).toHaveProperty("name"),
-                    expect(category).toHaveProperty("avatar_url")
+                body.forEach((user) => {
+                    expect(user).toHaveProperty("username"),
+                    expect(user).toHaveProperty("name"),
+                    expect(user).toHaveProperty("avatar_url")
                 });
             });
         })
