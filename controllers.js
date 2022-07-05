@@ -4,8 +4,7 @@ const { request } = require("./app")
 exports.getCategories = (req, res, next) => {
     selectCategories().then((data) => {
         res.status(200).send(data); 
-    })
-    .catch((err) => {
+    }).catch((err) => {
         next(err);
     });  
 };
@@ -33,5 +32,7 @@ exports.patchReview = (req, res, next) => {
 exports.getUsers = (req, res, next) => {
     selectUsers().then((users) => {
         res.status(200).send(users)
+    }).catch((err) => {
+        next(err);
     });
 };
