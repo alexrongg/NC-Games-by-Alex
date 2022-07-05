@@ -36,3 +36,10 @@ exports.updateReview = (review_id, inc_votes) => {
         }l
     });
 };
+
+exports.selectUsers = () => {
+    return connection.query("SELECT * FROM users;")
+    .then((results) => {
+        return results.rows;
+    });
+};

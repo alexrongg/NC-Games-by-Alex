@@ -66,6 +66,21 @@ describe("NC games app", () => {
                     votes: 30
                 });
             });
+        });
+    });
+    describe("GET /api/users", () => {
+        test("Respond with status 200 and a body with properties of username, name and avatar_url" , () => {
+            return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then(({body}) => {
+                expect(body).toHaveLength(4);
+                body.forEach((category) => {
+                    expect(category).toHaveProperty("username"),
+                    expect(category).toHaveProperty("name"),
+                    expect(category).toHaveProperty("avatar_url")
+                });
+            });
         })
     });
 });
@@ -110,7 +125,6 @@ describe("NC games Error handling", () => {
         .send({ inc_votes: -50 })
         .expect(400)
         .then(({body}) => {
-            console.log(body)
             expect(body.msg).toBe(`Patched object must have the form of { inc_votes: newVote } where newVote indicates the change in votes. Votes cannot go below 0`)
         });
     });
@@ -120,7 +134,6 @@ describe("NC games Error handling", () => {
         .send({ toiletpaperwoo: 50 })
         .expect(400)
         .then(({body}) => {
-            console.log(body)
             expect(body.msg).toBe(`Patched object must have the form of { inc_votes: newVote } where newVote indicates the change in votes. Votes cannot go below 0`)
         });
     });

@@ -1,4 +1,4 @@
-const { selectCategories, selectReview, updateReview} = require("./models");
+const { selectCategories, selectReview, updateReview, selectUsers} = require("./models");
 const { request } = require("./app")
 
 exports.getCategories = (req, res, next) => {
@@ -28,4 +28,10 @@ exports.patchReview = (req, res, next) => {
     }).catch((err) => {
         next(err);
     })
+};
+
+exports.getUsers = (req, res, next) => {
+    selectUsers().then((users) => {
+        res.status(200).send(users)
+    });
 };
