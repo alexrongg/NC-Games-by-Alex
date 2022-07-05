@@ -53,8 +53,8 @@ describe("NC games app", () => {
             .patch(`/api/reviews/${REVIEW_ID}`)
             .send(voteUpdate)
             .expect(200)
-            .then(({ body }) => {
-                expect(body.review).toEqual({
+            .then(( {body} ) => {
+                expect(body.review[0]).toEqual({
                     review_id: REVIEW_ID,
                     title: 'Jenga',
                     designer: 'Leslie Scott',

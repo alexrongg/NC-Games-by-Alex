@@ -20,4 +20,12 @@ exports.selectReview = (reviewID) => {
     });
 };
 
-
+exports.updateReview = (review_id, inc_votes) => {
+    return connection.query(
+    `SELECT review_id, title, designer, owner, review_img_url, review_body, category, created_at, (votes + $2) AS votes 
+    FROM reviews 
+    WHERE review_id = $1;`, [review_id, inc_votes])
+    .then((review) => {
+        return review.rows
+    });
+};
