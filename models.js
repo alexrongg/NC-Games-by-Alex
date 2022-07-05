@@ -1,7 +1,23 @@
 const connection = require("./db/connection");
 
-exports.requestCategories = () => {
+exports.selectCategories = () => {
     return connection.query("SELECT * FROM categories;").then((results) => {
-        return results.rows
-    })
-}
+        return results.rows;
+    });
+};
+
+exports.selectReview = (reviewID) => {
+    return connection.query("SELECT * FROM reviews WHERE review_id = $1;", [reviewID])
+    .then((review) => {
+        if (review.rows.length === 0) {
+            return Promise.reject({
+                msg : "Invalid review ID",
+                status: 404
+            });
+        }else {
+            return review.rows[0];  
+        }; 
+    });
+};
+
+
