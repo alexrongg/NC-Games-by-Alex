@@ -1,4 +1,4 @@
-const { selectCategories, selectReview, updateReview, selectUsers} = require("./models");
+const { selectCategories, selectReview, updateReview, selectUsers, selectReviews} = require("./models");
 const { request } = require("./app")
 
 exports.getCategories = (req, res, next) => {
@@ -19,6 +19,20 @@ exports.getReview = (req, res, next) => {
     });
 };
 
+exports.getUsers = (req, res, next) => {
+    selectUsers().then((users) => {
+        res.status(200).send(users)
+    }).catch((err) => {
+        next(err);
+    });
+};
+
+exports.getReviews = (req, res, next) => {
+    selectReviews().then((reviews) => {
+        res.status(200).send(reviews)
+    });
+}
+
 exports.patchReview = (req, res, next) => {
     const { inc_votes } = req.body;
     const { review_id } = req.params;
@@ -29,10 +43,3 @@ exports.patchReview = (req, res, next) => {
     })
 };
 
-exports.getUsers = (req, res, next) => {
-    selectUsers().then((users) => {
-        res.status(200).send(users)
-    }).catch((err) => {
-        next(err);
-    });
-};
