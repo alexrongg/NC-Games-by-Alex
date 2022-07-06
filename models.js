@@ -56,9 +56,9 @@ exports.selectReviewComments = (review_id) => {
     SELECT * FROM comments
     WHERE review_id = $1;`, [review_id])
     .then((comments) => {
-        if(comments.rows.length === 0) {
+        if (comments.rows.length === 0) {
             return Promise.reject({
-                msg : "Invalid review ID",
+                msg : "Invalid review ID or this review has no comments",
                 status: 404
             });
         } else {
