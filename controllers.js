@@ -57,7 +57,9 @@ exports.patchReview = (req, res, next) => {
 exports.postComment = (req, res, next) => {
     const {username, body} = req.body;
     const {review_id} = req.params;
-    insertComment(review_id, username, body).then((comments) => {
-        res.status(201).send({comments})
+    insertComment(review_id, username, body).then((comment) => {
+        res.status(201).send({comment})
+    }).catch((err) => {
+        next(err)
     });
 };

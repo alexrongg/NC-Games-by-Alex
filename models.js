@@ -85,7 +85,6 @@ exports.updateReview = (review_id, inc_votes) => {
 };
 
 exports.insertComment = (review_id, username, body) => {
-    console.log(review_id, username, body)
     return connection.query(`
     INSERT INTO comments 
         (review_id, body, author)
@@ -93,7 +92,6 @@ exports.insertComment = (review_id, username, body) => {
         ($1 , $3,  $2)
         RETURNING *;`, [review_id, username, body])
         .then((comment) => {
-            console.log(comment.rows)
             return comment.rows
         });
 };

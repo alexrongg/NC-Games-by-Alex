@@ -138,8 +138,7 @@ describe("NC games app", () => {
             .send(comment)
             .expect(201)
             .then(({body}) => {
-                console.log(body)
-                expect(body.comments[0]).toEqual({
+                expect(body.comment[0]).toEqual({
                     comment_id: 7,
                     body: 'Hello this is a test review',
                     review_id: 2,
@@ -210,6 +209,24 @@ describe("NC games Error handling", () => {
         .expect(404)
         .then(({body}) => {
             expect(body.msg).toBe("Invalid review ID or this review has no comments")
+        });
+    });
+    test("POST /api/reviews/:review_id/comments returns a error when username is not found in the database", () => {
+        return request(app)
+        .post("/api/reviews/1/comments")
+        .send({username: 'NO USERNAME MAN', body: 'Hello this is a test review'})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("Request body must be {username: [string], body: [string]} and review ID must be a exisitng review ID")
+        });
+    });
+    test("POST /api/reviews/:review_id/comments returns a error when review ID does not exist", () => {
+        return request(app)
+        .post("/api/reviews/12123123/comments")
+        .send({username: 'dav3rid', body: 'Hello this is a test review'})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("Request body must be {username: [string], body: [string]} and review ID must be a exisitng review ID")
         });
     });
 });

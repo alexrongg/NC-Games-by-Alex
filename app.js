@@ -22,6 +22,8 @@ app.use((err, req, res, next) => {
         res.status(404).send(err)
     } else if (err.code === "22P02") {
         res.status(400).send({ msg: "Invalid Syntax of review ID, need to be a number"})
+    } else if (err.code === "23503") {
+        res.status(400).send({ msg: "Request body must be {username: [string], body: [string]} and review ID must be a exisitng review ID"})
     } else if (err.msg === "Invalid review ID or this review has no comments") {
         res.status(404).send(err)
     } else if (err.msg) {
