@@ -84,3 +84,15 @@ exports.updateReview = (review_id, inc_votes) => {
     });
 };
 
+exports.insertComment = (review_id, username, body) => {
+    return connection.query(`
+    INSERT INTO comments 
+        (review_id, body, author)
+    VALUES
+        ($1 , $3,  $2)
+        RETURNING *;`, [review_id, username, body])
+        .then((comment) => {
+            return comment.rows
+        });
+};
+

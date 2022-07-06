@@ -129,6 +129,27 @@ describe("NC games app", () => {
             });
         })
     });
+    describe("POST /api/reviews/:review_id/comments", () => {
+        test("Respond with status 201 and the posted comment" , () => {
+            const review_id = 2
+            const comment = {username: 'dav3rid', body: 'Hello this is a test review'}
+            return request(app)
+            .post(`/api/reviews/${review_id}/comments`)
+            .send(comment)
+            .expect(201)
+            .then(({body}) => {
+                expect(body).toHaveLength(1);
+                body.forEach((comment) => {
+                    expect(comment).toHaveProperty("comment_id"),
+                    expect(comment).toHaveProperty("votes"),
+                    expect(comment).toHaveProperty("review_id"),
+                    expect(comment).toHaveProperty("created_at"),
+                    expect(comment).toHaveProperty("author"),
+                    expect(comment).toHaveProperty("body")
+                });
+            });
+        })
+    });
 });
 
 describe("NC games Error handling", () => {

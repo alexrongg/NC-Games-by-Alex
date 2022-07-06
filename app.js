@@ -1,4 +1,4 @@
-const { getCategories, getReview, patchReview, getUsers, getReviews, getReviewComments } = require("./controllers");
+const { getCategories, getReview, patchReview, getUsers, getReviews, getReviewComments, postComment } = require("./controllers");
 const express = require("express");
 const app = express();
 app.use(express.json());
@@ -10,6 +10,8 @@ app.get("/api/reviews", getReviews);
 app.get("/api/reviews/:review_id/comments", getReviewComments);
 
 app.patch("/api/reviews/:review_id", patchReview);
+
+app.post("/api/reviews/:review_id/comments", postComment);
 
 app.use("*", (req, res) => {
     res.status(404).send({msg: "Invalid path"});
