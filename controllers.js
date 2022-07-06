@@ -30,6 +30,8 @@ exports.getUsers = (req, res, next) => {
 exports.getReviews = (req, res, next) => {
     selectReviews().then((reviews) => {
         res.status(200).send(reviews)
+    }).catch((err) => {
+        next(err);
     });
 }
 
@@ -42,4 +44,6 @@ exports.patchReview = (req, res, next) => {
         next(err);
     })
 };
+
+
 
