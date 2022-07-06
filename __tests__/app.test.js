@@ -90,7 +90,6 @@ describe("NC games app", () => {
             .get("/api/reviews")
             .expect(200)
             .then(({body}) => {
-                console.log(body)
                 expect(body).toHaveLength(13);
                 expect(body).toBeSortedBy("created_at", {
                     descending: true,
@@ -107,6 +106,25 @@ describe("NC games app", () => {
                     expect(review).toHaveProperty("review_body"),
                     expect(review).toHaveProperty("designer"),
                     expect(review).toHaveProperty("comment_count")
+                });
+            });
+        })
+    });
+    describe("GET /api/reviews/:review_id/comments", () => {
+        test("Respond with status 200 and a array of comments from the review ID" , () => {
+            const review_id = 2
+            return request(app)
+            .get(`/api/reviews/${review_id}/comments`)
+            .expect(200)
+            .then(({body}) => {
+                expect(body).toHaveLength(3);
+                body.forEach((comment) => {
+                    expect(comment).toHaveProperty("comment_id"),
+                    expect(comment).toHaveProperty("votes"),
+                    expect(comment).toHaveProperty("review_id"),
+                    expect(comment).toHaveProperty("created_at"),
+                    expect(comment).toHaveProperty("author"),
+                    expect(comment).toHaveProperty("body")
                 });
             });
         })
@@ -163,6 +181,14 @@ describe("NC games Error handling", () => {
         .expect(400)
         .then(({body}) => {
             expect(body.msg).toBe(`Patched object must have the form of { inc_votes: newVote } where newVote indicates the change in votes. Votes cannot go below 0`)
+        });
+    });
+    test("STATUS 404, responds with a message when requested a invalid review ID OR request request for a review with no comments for /api.reviews/:review_id/comments", () => {
+        return request(app)
+        .get("/api/reviews/0/comments")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("Invalid review ID or this review has no comments")
         });
     });
 });
