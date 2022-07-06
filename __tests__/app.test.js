@@ -138,14 +138,14 @@ describe("NC games app", () => {
             .send(comment)
             .expect(201)
             .then(({body}) => {
-                expect(body).toHaveLength(1);
-                body.forEach((comment) => {
-                    expect(comment).toHaveProperty("comment_id"),
-                    expect(comment).toHaveProperty("votes"),
-                    expect(comment).toHaveProperty("review_id"),
-                    expect(comment).toHaveProperty("created_at"),
-                    expect(comment).toHaveProperty("author"),
-                    expect(comment).toHaveProperty("body")
+                console.log(body)
+                expect(body.comments[0]).toEqual({
+                    comment_id: 7,
+                    body: 'Hello this is a test review',
+                    review_id: 2,
+                    author: 'dav3rid',
+                    votes: 0,
+                    created_at: expect.any(String)
                 });
             });
         })
