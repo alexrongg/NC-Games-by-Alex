@@ -117,8 +117,8 @@ describe("NC games app", () => {
             .get(`/api/reviews/${review_id}/comments`)
             .expect(200)
             .then(({body}) => {
-                expect(body).toHaveLength(3);
-                body.forEach((comment) => {
+                expect(body.comments).toHaveLength(3);
+                body.comments.forEach((comment) => {
                     expect(comment).toHaveProperty("comment_id"),
                     expect(comment).toHaveProperty("votes"),
                     expect(comment).toHaveProperty("review_id"),
