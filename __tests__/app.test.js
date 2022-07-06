@@ -40,7 +40,8 @@ describe("NC games app", () => {
                     review_body: 'Farmyard fun!',
                     category: 'euro game',
                     created_at: "2021-01-18T10:00:20.514Z",
-                    votes: 1
+                    votes: 1,
+                    comment_count: "0"
                 });
             });
         })
@@ -75,10 +76,10 @@ describe("NC games app", () => {
             .expect(200)
             .then(({body}) => {
                 expect(body).toHaveLength(4);
-                body.forEach((category) => {
-                    expect(category).toHaveProperty("username"),
-                    expect(category).toHaveProperty("name"),
-                    expect(category).toHaveProperty("avatar_url")
+                body.forEach((user) => {
+                    expect(user).toHaveProperty("username"),
+                    expect(user).toHaveProperty("name"),
+                    expect(user).toHaveProperty("avatar_url")
                 });
             });
         })
