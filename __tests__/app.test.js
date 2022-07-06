@@ -90,7 +90,6 @@ describe("NC games app", () => {
             .get("/api/reviews")
             .expect(200)
             .then(({body}) => {
-                console.log(body)
                 expect(body).toHaveLength(13);
                 expect(body).toBeSortedBy("created_at", {
                     descending: true,
@@ -107,6 +106,25 @@ describe("NC games app", () => {
                     expect(review).toHaveProperty("review_body"),
                     expect(review).toHaveProperty("designer"),
                     expect(review).toHaveProperty("comment_count")
+                });
+            });
+        })
+    });
+    describe("GET /api/reviews/:review_id/comments", () => {
+        test("Respond with status 200 and a array of comments from the review ID" , () => {
+            const review_id = 2
+            return request(app)
+            .get(`/api/reviews/${review_id}/comments`)
+            .expect(200)
+            .then(({body}) => {
+                expect(body).toHaveLength(3);
+                body.forEach((comment) => {
+                    expect(comment).toHaveProperty("comment_id"),
+                    expect(comment).toHaveProperty("votes"),
+                    expect(comment).toHaveProperty("review_id"),
+                    expect(comment).toHaveProperty("created_at"),
+                    expect(comment).toHaveProperty("author"),
+                    expect(comment).toHaveProperty("body")
                 });
             });
         })
