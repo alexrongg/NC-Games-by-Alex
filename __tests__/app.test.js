@@ -183,4 +183,12 @@ describe("NC games Error handling", () => {
             expect(body.msg).toBe(`Patched object must have the form of { inc_votes: newVote } where newVote indicates the change in votes. Votes cannot go below 0`)
         });
     });
+    test("STATUS 404, responds with a message of `Invalid review ID` when requested a invalid review ID for /api.reviews/:review_id/comments", () => {
+        return request(app)
+        .get("/api/reviews/1231234/comments")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("Invalid review ID")
+        });
+    });
 });

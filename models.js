@@ -51,12 +51,19 @@ exports.selectReviews = () => {
     });
 };
 
-exports.selectReviewComments = () => {
+exports.selectReviewComments = (review_id) => {
     return connection.query(`
     SELECT * FROM comments
-    WHERE review_id = 2;`)
+    WHERE review_id = $1;`, [review_id])
     .then((comments) => {
+        if(comments.rows.length === 0) {
+            return Promise.reject({
+                msg : "Invalid review ID",
+                status: 404
+            });
+        } else {
         return comments.rows;
+        };
     });
 };
 
