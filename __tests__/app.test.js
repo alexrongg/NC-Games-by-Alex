@@ -111,12 +111,12 @@ describe("NC games app", () => {
         })
     });
     describe("GET /api/reviews (queries)", () => {
-        test("200: responds with array of reviews sorted by any valid column and ascending" , () => {
+        test("200: responds with array of reviews sorted by any valid column, ascending and filtered to have specific category" , () => {
             return request(app)
-            .get("/api/reviews?sort_by=votes&order_by=ASC")
+            .get("/api/reviews?sort_by=votes&order_by=ASC&category=dexterity")
             .expect(200)
             .then(({body}) => {
-                expect(body).toHaveLength(13);
+                expect(body).toHaveLength(1);
                 expect(body).toBeSortedBy("votes", {
                     descending: false,
                     coerce: true
@@ -125,7 +125,7 @@ describe("NC games app", () => {
                     expect(review).toHaveProperty("owner"),
                     expect(review).toHaveProperty("title"),
                     expect(review).toHaveProperty("review_id"),
-                    expect(review).toHaveProperty("category"),
+                    expect(review.category).toEqual("dexterity"),
                     expect(review).toHaveProperty("review_img_url"),
                     expect(review).toHaveProperty("created_at"),
                     expect(review).toHaveProperty("votes"),

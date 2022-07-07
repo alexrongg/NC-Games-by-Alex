@@ -1,3 +1,4 @@
+const e = require("express");
 const connection = require("./db/connection");
 
 exports.selectCategories = () => {
@@ -36,7 +37,7 @@ exports.selectUsers = () => {
     });
 };
 
-exports.selectReviews = (sort_by = "created_at", order_by = "DESC", category = "") => {
+exports.selectReviews = (sort_by = "created_at", order_by = "DESC", category) => {
     const validQueries = [
         "owner",
         "title",
@@ -49,8 +50,7 @@ exports.selectReviews = (sort_by = "created_at", order_by = "DESC", category = "
         "designer",
         "comment_count",
         "DESC",
-        "ASC",
-        ""
+        "ASC"
     ];
 
 
@@ -60,17 +60,37 @@ exports.selectReviews = (sort_by = "created_at", order_by = "DESC", category = "
     COUNT(comments.review_id) AS comment_count
     FROM reviews
     LEFT JOIN comments
-    ON comments.review_id = reviews.review_id
-    GROUP BY reviews.review_id`;
+    ON comments.review_id = reviews.review_id`;
 
-    if (validQueries.includes(sort_by)) {
-        query += ` ORDER BY reviews.${sort_by} ${order_by}`
-        console.log(query)
+
+    function categoryExist(category) {
+        return connection.query(`SELECT * FROM categories WHERE slug = $1;`, [category]).then((results) => {
+            if (results.rows.length !== 0) {
+                return true;
+            };
+            return false
+        })
     };
-    
-    return connection.query(query)
-    .then((reviews) => {
-        console.log(reviews.rows)
+
+
+    return categoryExist(category)
+    .then((results) => {
+        if(category !== undefined) {
+            if (results === true){
+                query += ` WHERE reviews.category='${category}'`
+            }else {
+            return Promise.reject({
+                msg : `Category name ${category} was not found`,
+                status: 404
+            });
+            }
+        }
+        if (validQueries.includes(sort_by)) {
+            query += ` GROUP BY reviews.review_id ORDER BY reviews.${sort_by} ${order_by}`
+        }; 
+        console.log(query)
+        return connection.query(query)
+    }).then((reviews) => {
         return reviews.rows
     });
 };
