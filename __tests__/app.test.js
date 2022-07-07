@@ -85,7 +85,7 @@ describe("NC games app", () => {
         })
     });
     describe("GET /api/reviews", () => {
-        test("Respond with status 200 and a array of reviews with the property created_at sorted in descending order" , () => {
+        test("Respond with status 200 and a array of reviews with the property created_at sorted in descending order as default" , () => {
             return request(app)
             .get("/api/reviews")
             .expect(200)
@@ -93,6 +93,32 @@ describe("NC games app", () => {
                 expect(body).toHaveLength(13);
                 expect(body).toBeSortedBy("created_at", {
                     descending: true,
+                    coerce: true
+                });
+                body.forEach((review) => {
+                    expect(review).toHaveProperty("owner"),
+                    expect(review).toHaveProperty("title"),
+                    expect(review).toHaveProperty("review_id"),
+                    expect(review).toHaveProperty("category"),
+                    expect(review).toHaveProperty("review_img_url"),
+                    expect(review).toHaveProperty("created_at"),
+                    expect(review).toHaveProperty("votes"),
+                    expect(review).toHaveProperty("review_body"),
+                    expect(review).toHaveProperty("designer"),
+                    expect(review).toHaveProperty("comment_count")
+                });
+            });
+        })
+    });
+    describe("GET /api/reviews (queries)", () => {
+        test("200: responds with array of reviews sorted by any valid column and ascending" , () => {
+            return request(app)
+            .get("/api/reviews?sort_by=votes&order_by=ASC")
+            .expect(200)
+            .then(({body}) => {
+                expect(body).toHaveLength(13);
+                expect(body).toBeSortedBy("votes", {
+                    descending: false,
                     coerce: true
                 });
                 body.forEach((review) => {
