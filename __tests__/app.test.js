@@ -165,24 +165,24 @@ describe("NC games Error handling", () => {
         .get("/api/reviews/12312344")
         .expect(404)
         .then(({body}) => {
-            expect(body.msg).toBe("Invalid review ID")
+            expect(body.msg).toBe("No review found for review ID 12312344")
         });
     });
-    test("STATUS 404, responds with a error message when inputted wrong syntax as review ID", () => {
+    test("STATUS 400, responds with a error message when inputted wrong syntax as review ID", () => {
         return request(app)
         .get("/api/reviews/bobby")
         .expect(400)
         .then(({body}) => {
-            expect(body.msg).toBe("Invalid Syntax of review ID, need to be a number")
+            expect(body.msg).toBe("Bad Request")
         });
     });
-    test("STATUS 404, PATCH: responds with a error message when inputted wrong syntax as review ID", () => {
+    test("STATUS 400, PATCH: responds with a error message when inputted wrong syntax as review ID", () => {
         return request(app)
         .patch("/api/reviews/bobby")
         .send({ inc_votes: 25 })
         .expect(400)
         .then(({body}) => {
-            expect(body.msg).toBe("Invalid Syntax of review ID, need to be a number")
+            expect(body.msg).toBe("Bad Request")
         });
     });
     test("STATUS 404, PATCH: responds with a error message when votes go below existing votes", () => {
@@ -217,16 +217,16 @@ describe("NC games Error handling", () => {
         .send({username: 'NO USERNAME MAN', body: 'Hello this is a test review'})
         .expect(400)
         .then(({body}) => {
-            expect(body.msg).toBe("Request body must be {username: [string], body: [string]} and review ID must be a exisitng review ID")
+            expect(body.msg).toBe("Bad Request")
         });
     });
     test("POST /api/reviews/:review_id/comments returns a error when review ID does not exist", () => {
         return request(app)
         .post("/api/reviews/12123123/comments")
         .send({username: 'dav3rid', body: 'Hello this is a test review'})
-        .expect(400)
+        .expect(404)
         .then(({body}) => {
-            expect(body.msg).toBe("Request body must be {username: [string], body: [string]} and review ID must be a exisitng review ID")
+            expect(body.msg).toBe("No review found for review ID 12123123")
         });
     });
 });
