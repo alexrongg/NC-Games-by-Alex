@@ -20,7 +20,7 @@ exports.selectReview = (reviewID) => {
     .then((review) => {
         if (review.rows.length === 0) {
             return Promise.reject({
-                msg : "Invalid review ID",
+                msg : `No review found for review ID ${reviewID}`,
                 status: 404
             });
         }else {
@@ -82,5 +82,31 @@ exports.updateReview = (review_id, inc_votes) => {
           return review.rows;
         }l
     });
+};
+
+exports.insertComment = (review_id, username, body) => {
+    return this.selectReview(review_id)
+    .then((results) => {
+        console.log(results)
+        if (typeof results !== "object") {
+            return Promise.reject({
+                "msg": `No review found for review ID ${review_id}`,
+                "status": 404
+              });
+        }
+        return connection.query(`
+        INSERT INTO comments 
+            (review_id, body, author)
+        VALUES
+            ($1 , $3,  $2)
+            RETURNING *;`, [review_id, username, body])
+    }).then((comment) => {
+            return comment.rows ;    
+        }).catch((err) => {
+            return Promise.reject(err)
+        });
+
+    
+       
 };
 

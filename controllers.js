@@ -1,4 +1,4 @@
-const { selectCategories, selectReview, updateReview, selectUsers, selectReviews, selectReviewComments} = require("./models");
+const { selectCategories, selectReview, updateReview, selectUsers, selectReviews, selectReviewComments, insertComment} = require("./models");
 const { request } = require("./app")
 
 exports.getCategories = (req, res, next) => {
@@ -38,7 +38,7 @@ exports.getReviews = (req, res, next) => {
 exports.getReviewComments = (req, res, next) => {
     const { review_id } = req.params;
     selectReviewComments(review_id).then((comments) => {
-        res.status(200).send(comments)
+        res.status(200).send({comments})
     }).catch((err) => {
         next(err);
     });
@@ -52,4 +52,14 @@ exports.patchReview = (req, res, next) => {
     }).catch((err) => {
         next(err);
     })
+};
+
+exports.postComment = (req, res, next) => {
+    const {username, body} = req.body;
+    const {review_id} = req.params;
+    insertComment(review_id, username, body).then((comment) => {
+        res.status(201).send({comment})
+    }).catch((err) => {
+        next(err)
+    });
 };

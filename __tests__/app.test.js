@@ -117,14 +117,34 @@ describe("NC games app", () => {
             .get(`/api/reviews/${review_id}/comments`)
             .expect(200)
             .then(({body}) => {
-                expect(body).toHaveLength(3);
-                body.forEach((comment) => {
+                expect(body.comments).toHaveLength(3);
+                body.comments.forEach((comment) => {
                     expect(comment).toHaveProperty("comment_id"),
                     expect(comment).toHaveProperty("votes"),
                     expect(comment).toHaveProperty("review_id"),
                     expect(comment).toHaveProperty("created_at"),
                     expect(comment).toHaveProperty("author"),
                     expect(comment).toHaveProperty("body")
+                });
+            });
+        })
+    });
+    describe("POST /api/reviews/:review_id/comments", () => {
+        test("Respond with status 201 and the posted comment" , () => {
+            const review_id = 2
+            const comment = {username: 'dav3rid', body: 'Hello this is a test review'}
+            return request(app)
+            .post(`/api/reviews/${review_id}/comments`)
+            .send(comment)
+            .expect(201)
+            .then(({body}) => {
+                expect(body.comment[0]).toEqual({
+                    comment_id: 7,
+                    body: 'Hello this is a test review',
+                    review_id: 2,
+                    author: 'dav3rid',
+                    votes: 0,
+                    created_at: expect.any(String)
                 });
             });
         })
@@ -145,24 +165,24 @@ describe("NC games Error handling", () => {
         .get("/api/reviews/12312344")
         .expect(404)
         .then(({body}) => {
-            expect(body.msg).toBe("Invalid review ID")
+            expect(body.msg).toBe("No review found for review ID 12312344")
         });
     });
-    test("STATUS 404, responds with a error message when inputted wrong syntax as review ID", () => {
+    test("STATUS 400, responds with a error message when inputted wrong syntax as review ID", () => {
         return request(app)
         .get("/api/reviews/bobby")
         .expect(400)
         .then(({body}) => {
-            expect(body.msg).toBe("Invalid Syntax of review ID, need to be a number")
+            expect(body.msg).toBe("Bad Request")
         });
     });
-    test("STATUS 404, PATCH: responds with a error message when inputted wrong syntax as review ID", () => {
+    test("STATUS 400, PATCH: responds with a error message when inputted wrong syntax as review ID", () => {
         return request(app)
         .patch("/api/reviews/bobby")
         .send({ inc_votes: 25 })
         .expect(400)
         .then(({body}) => {
-            expect(body.msg).toBe("Invalid Syntax of review ID, need to be a number")
+            expect(body.msg).toBe("Bad Request")
         });
     });
     test("STATUS 404, PATCH: responds with a error message when votes go below existing votes", () => {
@@ -189,6 +209,24 @@ describe("NC games Error handling", () => {
         .expect(404)
         .then(({body}) => {
             expect(body.msg).toBe("Invalid review ID or this review has no comments")
+        });
+    });
+    test("POST /api/reviews/:review_id/comments returns a error when username is not found in the database", () => {
+        return request(app)
+        .post("/api/reviews/1/comments")
+        .send({username: 'NO USERNAME MAN', body: 'Hello this is a test review'})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("Bad Request")
+        });
+    });
+    test("POST /api/reviews/:review_id/comments returns a error when review ID does not exist", () => {
+        return request(app)
+        .post("/api/reviews/12123123/comments")
+        .send({username: 'dav3rid', body: 'Hello this is a test review'})
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("No review found for review ID 12123123")
         });
     });
 });
