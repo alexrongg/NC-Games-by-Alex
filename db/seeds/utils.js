@@ -1,3 +1,5 @@
+const connection = require("../connection");
+
 exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
 	if (!created_at) return { ...otherProperties };
 	return { created_at: new Date(created_at), ...otherProperties };
@@ -19,4 +21,13 @@ exports.formatComments = (comments, idLookup) => {
 			...this.convertTimestampToDate(restOfComment),
 		};
 	});
+};
+
+exports.checkCategoryExists = (category) => {
+	return connection.query(`SELECT * FROM categories WHERE slug = $1;`, [category]).then((results) => {
+		if (results.rows.length !== 0) {
+			return true;
+		};
+		return false
+	})
 };

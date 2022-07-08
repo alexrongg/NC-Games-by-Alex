@@ -85,7 +85,7 @@ describe("NC games app", () => {
         })
     });
     describe("GET /api/reviews", () => {
-        test("Respond with status 200 and a array of reviews with the property created_at sorted in descending order" , () => {
+        test("Respond with status 200 and a array of reviews with the property created_at sorted in descending order as default" , () => {
             return request(app)
             .get("/api/reviews")
             .expect(200)
@@ -100,6 +100,32 @@ describe("NC games app", () => {
                     expect(review).toHaveProperty("title"),
                     expect(review).toHaveProperty("review_id"),
                     expect(review).toHaveProperty("category"),
+                    expect(review).toHaveProperty("review_img_url"),
+                    expect(review).toHaveProperty("created_at"),
+                    expect(review).toHaveProperty("votes"),
+                    expect(review).toHaveProperty("review_body"),
+                    expect(review).toHaveProperty("designer"),
+                    expect(review).toHaveProperty("comment_count")
+                });
+            });
+        })
+    });
+    describe("GET /api/reviews (queries)", () => {
+        test("200: responds with array of reviews sorted by any valid column, ascending and filtered to have specific category" , () => {
+            return request(app)
+            .get("/api/reviews?sort_by=votes&order_by=ASC&category=dexterity")
+            .expect(200)
+            .then(({body}) => {
+                expect(body).toHaveLength(1);
+                expect(body).toBeSortedBy("votes", {
+                    descending: false,
+                    coerce: true
+                });
+                body.forEach((review) => {
+                    expect(review).toHaveProperty("owner"),
+                    expect(review).toHaveProperty("title"),
+                    expect(review).toHaveProperty("review_id"),
+                    expect(review.category).toEqual("dexterity"),
                     expect(review).toHaveProperty("review_img_url"),
                     expect(review).toHaveProperty("created_at"),
                     expect(review).toHaveProperty("votes"),
@@ -174,6 +200,30 @@ describe("NC games Error handling", () => {
         .expect(400)
         .then(({body}) => {
             expect(body.msg).toBe("Bad Request")
+        });
+    });
+    test("400: returns err messaged when invalid sort_by query", () => {
+        return request(app)
+        .get("/api/reviews?sort_by=votese")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("Invalid sort_by query")
+        });
+    });
+    test("400: returns err messaged when invalid category query", () => {
+        return request(app)
+        .get("/api/reviews?category=votese")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("Category name votese was not found")
+        });
+    });
+    test("400: returns err messaged when invalid order_by query", () => {
+        return request(app)
+        .get("/api/reviews?order_by=votese")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("Invalid order_by query")
         });
     });
     test("STATUS 400, PATCH: responds with a error message when inputted wrong syntax as review ID", () => {

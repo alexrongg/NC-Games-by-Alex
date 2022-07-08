@@ -1,4 +1,6 @@
+const e = require("express");
 const connection = require("./db/connection");
+const { checkCategoryExists } = require("./query-utils")
 
 exports.selectCategories = () => {
     return connection.query("SELECT * FROM categories;").then((results) => {
@@ -7,6 +9,7 @@ exports.selectCategories = () => {
 };
 
 exports.selectReview = (reviewID) => {
+
     return connection.query(`
     SELECT reviews.review_id, reviews.title, reviews.designer, reviews.owner,
     reviews.review_img_url, reviews.review_body, reviews.category, reviews.created_at,
@@ -36,18 +39,60 @@ exports.selectUsers = () => {
     });
 };
 
-exports.selectReviews = () => {
-    return connection.query(`
-    SELECT reviews.review_id, reviews.owner, reviews.title, reviews.category, reviews.review_img_url,
+exports.selectReviews = (sort_by = "created_at", order_by = "DESC", category) => {
+    const validQueries = [
+        "owner",
+        "title",
+        "review_id",
+        "category",
+        "review_img_url",
+        "created_at",
+        "votes",
+        "review_body",
+        "designer",
+        "comment_count",
+        "DESC",
+        "ASC"
+    ];
+
+    let query = 
+    `SELECT reviews.review_id, reviews.owner, reviews.title, reviews.category, reviews.review_img_url,
     reviews.created_at, reviews.votes, reviews.review_body, reviews.designer,
     COUNT(comments.review_id) AS comment_count
     FROM reviews
     LEFT JOIN comments
-    ON comments.review_id = reviews.review_id
-    GROUP BY reviews.review_id
-    ORDER BY reviews.created_at DESC;`)
-    .then((reviews) => {
+    ON comments.review_id = reviews.review_id`;
+
+    return checkCategoryExists(category)
+    .then((results) => {
+        console.log(results)
+        if(category !== undefined) {
+            if (results === true){
+                query += ` WHERE reviews.category='${category}'`
+            }else {
+            return Promise.reject({
+                msg : `Category name ${category} was not found`,
+                status: 404
+            });
+            }
+        }
+        if (validQueries.includes(sort_by)) {
+            query += ` GROUP BY reviews.review_id ORDER BY reviews.${sort_by} ${order_by}`
+        }; 
+        return connection.query(query)
+    }).then((reviews) => {
         return reviews.rows
+    }).catch((err) => {
+        console.log(err)
+        if (err.code === "42803") { 
+            err.msg = "Invalid sort_by query" ;
+            err.status = 400 ;
+    };
+        if (err.code === "42601") {
+            err.msg = "Invalid order_by query";
+            err.status = 400;
+        }
+        return Promise.reject(err);
     });
 };
 
@@ -87,7 +132,6 @@ exports.updateReview = (review_id, inc_votes) => {
 exports.insertComment = (review_id, username, body) => {
     return this.selectReview(review_id)
     .then((results) => {
-        console.log(results)
         if (typeof results !== "object") {
             return Promise.reject({
                 "msg": `No review found for review ID ${review_id}`,
@@ -104,9 +148,6 @@ exports.insertComment = (review_id, username, body) => {
             return comment.rows ;    
         }).catch((err) => {
             return Promise.reject(err)
-        });
-
-    
-       
+        });   
 };
 

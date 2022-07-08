@@ -4,6 +4,12 @@ const {
 	formatComments,
 } = require("../db/seeds/utils");
 
+const { checkCategoryExists } = require("../query-utils")
+
+const connection = require("../db/connection")
+
+afterAll(() => connection.end())
+
 describe("convertTimestampToDate", () => {
 	test("returns a new object", () => {
 		const timestamp = 1557572706232;
@@ -101,4 +107,19 @@ describe("formatComments", () => {
 		const formattedComments = formatComments(comments, {});
 		expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
 	});
+});
+
+describe("checkCategoryExists", () => {
+	test("Return true when category is found", () => {
+		const category = "dexterity";
+		checkCategoryExists(category).then((results) => {
+		expect(results).toEqual(true);
+		});
+	});	
+	test("Return false when category is not found", () => {
+		const category = "dancer";
+		checkCategoryExists(category).then((results) => {
+		expect(results).toEqual(false);
+		});
+	});		
 });
