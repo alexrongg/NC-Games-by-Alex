@@ -82,8 +82,8 @@ describe("NC games app", () => {
         .get("/api/users")
         .expect(200)
         .then(({ body }) => {
-          expect(body).toHaveLength(4);
-          body.forEach((user) => {
+          expect(body.users).toHaveLength(4);
+          body.users.forEach((user) => {
             expect(user).toHaveProperty("username"),
               expect(user).toHaveProperty("name"),
               expect(user).toHaveProperty("avatar_url");
@@ -142,6 +142,78 @@ describe("NC games app", () => {
           });
         });
     });
+    test("200: responds with array of reviews with only valid category and default order and sortby", () => {
+      return request(app)
+        .get("/api/reviews?category=euro game")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toHaveLength(1);
+          expect(body).toBeSortedBy("created_at", {
+            descending: true,
+            coerce: true,
+          });
+          body.forEach((review) => {
+            expect(review).toHaveProperty("owner"),
+              expect(review).toHaveProperty("title"),
+              expect(review).toHaveProperty("review_id"),
+              expect(review.category).toEqual("euro game"),
+              expect(review).toHaveProperty("review_img_url"),
+              expect(review).toHaveProperty("created_at"),
+              expect(review).toHaveProperty("votes"),
+              expect(review).toHaveProperty("review_body"),
+              expect(review).toHaveProperty("designer"),
+              expect(review).toHaveProperty("comment_count");
+          });
+        });
+    });
+    test("200: responds with array of reviews sort by any valid column", () => {
+      return request(app)
+        .get("/api/reviews?sort_by=owner")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toHaveLength(13);
+          expect(body).toBeSortedBy("owner", {
+            descending: true,
+            coerce: true,
+          });
+          body.forEach((review) => {
+            expect(review).toHaveProperty("owner"),
+              expect(review).toHaveProperty("title"),
+              expect(review).toHaveProperty("review_id"),
+              expect(review).toHaveProperty("category"),
+              expect(review).toHaveProperty("review_img_url"),
+              expect(review).toHaveProperty("created_at"),
+              expect(review).toHaveProperty("votes"),
+              expect(review).toHaveProperty("review_body"),
+              expect(review).toHaveProperty("designer"),
+              expect(review).toHaveProperty("comment_count");
+          });
+        });
+    });
+    test("200: responds with array of reviews ordered by ASC with default sortby value", () => {
+      return request(app)
+        .get("/api/reviews?order_by=ASC")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toHaveLength(13);
+          expect(body).toBeSortedBy("created_at", {
+            descending: false,
+            coerce: true,
+          });
+          body.forEach((review) => {
+            expect(review).toHaveProperty("owner"),
+              expect(review).toHaveProperty("title"),
+              expect(review).toHaveProperty("review_id"),
+              expect(review).toHaveProperty("category"),
+              expect(review).toHaveProperty("review_img_url"),
+              expect(review).toHaveProperty("created_at"),
+              expect(review).toHaveProperty("votes"),
+              expect(review).toHaveProperty("review_body"),
+              expect(review).toHaveProperty("designer"),
+              expect(review).toHaveProperty("comment_count");
+          });
+        });
+    });
   });
   describe("GET /api/reviews/:review_id/comments", () => {
     test("Respond with status 200 and a array of comments from the review ID", () => {
@@ -188,12 +260,7 @@ describe("NC games app", () => {
   describe("DELETE /api/comments/:comment_id", () => {
     test("Respond with status 204 and empty body", () => {
       const comment_id = 1;
-      return request(app)
-        .delete(`/api/comments/${comment_id}`)
-        .expect(204)
-        .then(({ body }) => {
-          expect(body).toEqual({});
-        });
+      return request(app).delete(`/api/comments/${comment_id}`).expect(204);
     });
     test("Removes a comment from the database if id is correct", () => {
       const comment_id = 1;

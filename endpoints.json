@@ -30,5 +30,93 @@
         }
       ]
     }
+  },
+  "GET /api/reviews/:review_id": {
+    "description": "serves an array of specific review",
+    "exampleResponse": {
+      "review": [
+        {
+          "review_id": 1,
+          "title": "Agricola",
+          "designer": "Uwe Rosenberg",
+          "owner": "mallionaire",
+          "review_img_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          "review_body": "Farmyard fun!",
+          "category": "euro game",
+          "created_at": "2021-01-18T10:00:20.514Z",
+          "votes": 1,
+          "comment_count": "0"
+        }
+      ]
+    }
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "bobby782",
+          "name": "Bob Schnider",
+          "avatar_url": "www.googleimg.com/avatar/12312312321"
+        }
+      ]
+    }
+  },
+  "GET /api/reviews/:review_id/comments": {
+    "description": "Returns the comments of the specific review id",
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 5,
+          "body": "Now this is a story all about how, board games turned my life upside down",
+          "review_id": 2,
+          "author": "mallionaire",
+          "votes": 13,
+          "created_at": "2021-01-18T10:24:05.410Z"
+        }
+      ]
+    }
+  },
+  "PATCH /api/reviews/:review_id": {
+    "description": "Accepts a object that updates the votes of a specific review",
+    "exampleBody": { "inc_votes": 25 },
+    "exampleResponse": {
+      "review": [
+        {
+          "review_id": 1,
+          "title": "Agricola",
+          "designer": "Uwe Rosenberg",
+          "owner": "mallionaire",
+          "review_img_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          "review_body": "Farmyard fun!",
+          "category": "euro game",
+          "created_at": "2021-01-18T10:00:20.514Z",
+          "votes": "26 <- Votes increased by 25",
+          "comment_count": "0"
+        }
+      ]
+    }
+  },
+  "POST /api/reviews/:review_id/comments": {
+    "description": "Accepts a comment consisiting of existing username and body that allows you to post a comment under a specific review id",
+    "exampleBody": {
+      "username": "dav3rid",
+      "body": "Hello this is a test review"
+    },
+    "exampleResponse": {
+      "review": [
+        {
+          "comment_id": 7,
+          "body": "Hello this is a test review",
+          "review_id": 2,
+          "author": "dav3rid",
+          "votes": 0,
+          "created_at": "2021-01-18T10:00:20.514Z"
+        }
+      ]
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes an existing comment by id"
   }
 }
