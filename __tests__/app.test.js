@@ -210,6 +210,14 @@ describe("NC games Error handling", () => {
             expect(body.msg).toBe("Invalid sort_by query")
         });
     });
+    test("400: returns err messaged when invalid category query", () => {
+        return request(app)
+        .get("/api/reviews?category=votese")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe("Category name votese was not found")
+        });
+    });
     test("400: returns err messaged when invalid order_by query", () => {
         return request(app)
         .get("/api/reviews?order_by=votese")
