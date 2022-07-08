@@ -82,8 +82,8 @@ describe("NC games app", () => {
         .get("/api/users")
         .expect(200)
         .then(({ body }) => {
-          expect(body).toHaveLength(4);
-          body.forEach((user) => {
+          expect(body.users).toHaveLength(4);
+          body.users.forEach((user) => {
             expect(user).toHaveProperty("username"),
               expect(user).toHaveProperty("name"),
               expect(user).toHaveProperty("avatar_url");
@@ -188,12 +188,7 @@ describe("NC games app", () => {
   describe("DELETE /api/comments/:comment_id", () => {
     test("Respond with status 204 and empty body", () => {
       const comment_id = 1;
-      return request(app)
-        .delete(`/api/comments/${comment_id}`)
-        .expect(204)
-        .then(({ body }) => {
-          expect(body).toEqual({});
-        });
+      return request(app).delete(`/api/comments/${comment_id}`).expect(204);
     });
     test("Removes a comment from the database if id is correct", () => {
       const comment_id = 1;
