@@ -142,6 +142,78 @@ describe("NC games app", () => {
           });
         });
     });
+    test("200: responds with array of reviews with only valid category and default order and sortby", () => {
+      return request(app)
+        .get("/api/reviews?category=euro game")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toHaveLength(1);
+          expect(body).toBeSortedBy("created_at", {
+            descending: true,
+            coerce: true,
+          });
+          body.forEach((review) => {
+            expect(review).toHaveProperty("owner"),
+              expect(review).toHaveProperty("title"),
+              expect(review).toHaveProperty("review_id"),
+              expect(review.category).toEqual("euro game"),
+              expect(review).toHaveProperty("review_img_url"),
+              expect(review).toHaveProperty("created_at"),
+              expect(review).toHaveProperty("votes"),
+              expect(review).toHaveProperty("review_body"),
+              expect(review).toHaveProperty("designer"),
+              expect(review).toHaveProperty("comment_count");
+          });
+        });
+    });
+    test("200: responds with array of reviews sort by any valid column", () => {
+      return request(app)
+        .get("/api/reviews?sort_by=owner")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toHaveLength(13);
+          expect(body).toBeSortedBy("owner", {
+            descending: true,
+            coerce: true,
+          });
+          body.forEach((review) => {
+            expect(review).toHaveProperty("owner"),
+              expect(review).toHaveProperty("title"),
+              expect(review).toHaveProperty("review_id"),
+              expect(review).toHaveProperty("category"),
+              expect(review).toHaveProperty("review_img_url"),
+              expect(review).toHaveProperty("created_at"),
+              expect(review).toHaveProperty("votes"),
+              expect(review).toHaveProperty("review_body"),
+              expect(review).toHaveProperty("designer"),
+              expect(review).toHaveProperty("comment_count");
+          });
+        });
+    });
+    test("200: responds with array of reviews ordered by ASC with default sortby value", () => {
+      return request(app)
+        .get("/api/reviews?order_by=ASC")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toHaveLength(13);
+          expect(body).toBeSortedBy("created_at", {
+            descending: false,
+            coerce: true,
+          });
+          body.forEach((review) => {
+            expect(review).toHaveProperty("owner"),
+              expect(review).toHaveProperty("title"),
+              expect(review).toHaveProperty("review_id"),
+              expect(review).toHaveProperty("category"),
+              expect(review).toHaveProperty("review_img_url"),
+              expect(review).toHaveProperty("created_at"),
+              expect(review).toHaveProperty("votes"),
+              expect(review).toHaveProperty("review_body"),
+              expect(review).toHaveProperty("designer"),
+              expect(review).toHaveProperty("comment_count");
+          });
+        });
+    });
   });
   describe("GET /api/reviews/:review_id/comments", () => {
     test("Respond with status 200 and a array of comments from the review ID", () => {
