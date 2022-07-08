@@ -1,6 +1,7 @@
 const e = require("express");
 const connection = require("./db/connection");
 const { checkCategoryExists } = require("./query-utils");
+const fs = require("fs");
 
 exports.selectCategories = () => {
   return connection.query("SELECT * FROM categories;").then((results) => {

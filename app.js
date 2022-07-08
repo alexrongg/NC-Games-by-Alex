@@ -7,11 +7,13 @@ const {
   getReviewComments,
   postComment,
   deleteComment,
+  getJSON,
 } = require("./controllers");
 const express = require("express");
 const app = express();
 app.use(express.json());
 
+app.get("/api/", getJSON);
 app.get("/api/categories", getCategories);
 app.get("/api/reviews/:review_id", getReview);
 app.get("/api/users", getUsers);
