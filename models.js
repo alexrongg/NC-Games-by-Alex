@@ -53,7 +53,6 @@ exports.selectReviews = (sort_by = "created_at", order_by = "DESC", category) =>
         "ASC"
     ];
 
-
     let query = 
     `SELECT reviews.review_id, reviews.owner, reviews.title, reviews.category, reviews.review_img_url,
     reviews.created_at, reviews.votes, reviews.review_body, reviews.designer,
@@ -88,10 +87,20 @@ exports.selectReviews = (sort_by = "created_at", order_by = "DESC", category) =>
         if (validQueries.includes(sort_by)) {
             query += ` GROUP BY reviews.review_id ORDER BY reviews.${sort_by} ${order_by}`
         }; 
-        console.log(query)
         return connection.query(query)
     }).then((reviews) => {
         return reviews.rows
+    }).catch((err) => {
+        console.log(err)
+        if (err.code === "42803") { 
+            err.msg = "Invalid sort_by query" ;
+            err.status = 400 ;
+    };
+        if (err.code === "42601") {
+            err.msg = "Invalid order_by query";
+            err.status = 400;
+        }
+        return Promise.reject(err);
     });
 };
 

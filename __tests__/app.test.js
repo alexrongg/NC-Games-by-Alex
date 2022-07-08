@@ -202,6 +202,22 @@ describe("NC games Error handling", () => {
             expect(body.msg).toBe("Bad Request")
         });
     });
+    test("400: returns err messaged when invalid sort_by query", () => {
+        return request(app)
+        .get("/api/reviews?sort_by=votese")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("Invalid sort_by query")
+        });
+    });
+    test("400: returns err messaged when invalid order_by query", () => {
+        return request(app)
+        .get("/api/reviews?order_by=votese")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe("Invalid order_by query")
+        });
+    });
     test("STATUS 400, PATCH: responds with a error message when inputted wrong syntax as review ID", () => {
         return request(app)
         .patch("/api/reviews/bobby")
