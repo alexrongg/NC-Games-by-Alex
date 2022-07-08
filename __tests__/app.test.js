@@ -15,267 +15,275 @@ beforeEach(() => seed({ categoryData, commentData, reviewData, userData }));
 afterAll(() => connection.end());
 
 describe("NC games app", () => {
-  describe("GET /api/categories", () => {
-    test("Respond with status 200 and a body with properties of slug and description", () => {
+  describe("GET /api", () => {
+    test("Respond with status 200 and a JSON describing all the endpoints", () => {
       return request(app)
-        .get("/api/categories")
+        .get("/api")
         .expect(200)
-        .then(({ body }) => {
-          expect(body).toHaveLength(4);
-          body.forEach((category) => {
-            expect(category).toHaveProperty("slug"),
-              expect(category).toHaveProperty("description");
-          });
+        .then((endpoints) => {
+          expect(typeof endpoints).toEqual("object");
         });
     });
   });
-  describe("GET /api/reviews/:review_id", () => {
-    test("Respond with status 200 and a body full of properties", () => {
-      const REVIEW_ID = 1;
-      return request(app)
-        .get(`/api/reviews/${REVIEW_ID}`)
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.review).toEqual({
-            review_id: REVIEW_ID,
-            title: "Agricola",
-            designer: "Uwe Rosenberg",
-            owner: "mallionaire",
-            review_img_url:
-              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-            review_body: "Farmyard fun!",
-            category: "euro game",
-            created_at: "2021-01-18T10:00:20.514Z",
-            votes: 1,
-            comment_count: "0",
-          });
+});
+describe("GET /api/categories", () => {
+  test("Respond with status 200 and a body with properties of slug and description", () => {
+    return request(app)
+      .get("/api/categories")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveLength(4);
+        body.forEach((category) => {
+          expect(category).toHaveProperty("slug"),
+            expect(category).toHaveProperty("description");
         });
-    });
+      });
   });
-  describe("PATCH /api/reviews/:review_id", () => {
-    test("Respond with status 200 and a body of the updated review where votes has increased by 25", () => {
-      const voteUpdate = { inc_votes: 25 };
-      const REVIEW_ID = 2;
-      return request(app)
-        .patch(`/api/reviews/${REVIEW_ID}`)
-        .send(voteUpdate)
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.review[0]).toEqual({
-            review_id: REVIEW_ID,
-            title: "Jenga",
-            designer: "Leslie Scott",
-            owner: "philippaclaire9",
-            review_img_url:
-              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-            review_body: "Fiddly fun for all the family",
-            category: "dexterity",
-            created_at: new Date(1610964101251).toISOString(),
-            votes: 30,
-          });
+});
+describe("GET /api/reviews/:review_id", () => {
+  test("Respond with status 200 and a body full of properties", () => {
+    const REVIEW_ID = 1;
+    return request(app)
+      .get(`/api/reviews/${REVIEW_ID}`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.review).toEqual({
+          review_id: REVIEW_ID,
+          title: "Agricola",
+          designer: "Uwe Rosenberg",
+          owner: "mallionaire",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          review_body: "Farmyard fun!",
+          category: "euro game",
+          created_at: "2021-01-18T10:00:20.514Z",
+          votes: 1,
+          comment_count: "0",
         });
-    });
+      });
   });
-  describe("GET /api/users", () => {
-    test("Respond with status 200 and a body with properties of username, name and avatar_url", () => {
-      return request(app)
-        .get("/api/users")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.users).toHaveLength(4);
-          body.users.forEach((user) => {
-            expect(user).toHaveProperty("username"),
-              expect(user).toHaveProperty("name"),
-              expect(user).toHaveProperty("avatar_url");
-          });
+});
+describe("PATCH /api/reviews/:review_id", () => {
+  test("Respond with status 200 and a body of the updated review where votes has increased by 25", () => {
+    const voteUpdate = { inc_votes: 25 };
+    const REVIEW_ID = 2;
+    return request(app)
+      .patch(`/api/reviews/${REVIEW_ID}`)
+      .send(voteUpdate)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.review[0]).toEqual({
+          review_id: REVIEW_ID,
+          title: "Jenga",
+          designer: "Leslie Scott",
+          owner: "philippaclaire9",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          review_body: "Fiddly fun for all the family",
+          category: "dexterity",
+          created_at: new Date(1610964101251).toISOString(),
+          votes: 30,
         });
-    });
+      });
   });
-  describe("GET /api/reviews", () => {
-    test("Respond with status 200 and a array of reviews with the property created_at sorted in descending order as default", () => {
-      return request(app)
-        .get("/api/reviews")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body).toHaveLength(13);
-          expect(body).toBeSortedBy("created_at", {
-            descending: true,
-            coerce: true,
-          });
-          body.forEach((review) => {
-            expect(review).toHaveProperty("owner"),
-              expect(review).toHaveProperty("title"),
-              expect(review).toHaveProperty("review_id"),
-              expect(review).toHaveProperty("category"),
-              expect(review).toHaveProperty("review_img_url"),
-              expect(review).toHaveProperty("created_at"),
-              expect(review).toHaveProperty("votes"),
-              expect(review).toHaveProperty("review_body"),
-              expect(review).toHaveProperty("designer"),
-              expect(review).toHaveProperty("comment_count");
-          });
+});
+describe("GET /api/users", () => {
+  test("Respond with status 200 and a body with properties of username, name and avatar_url", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users).toHaveLength(4);
+        body.users.forEach((user) => {
+          expect(user).toHaveProperty("username"),
+            expect(user).toHaveProperty("name"),
+            expect(user).toHaveProperty("avatar_url");
         });
-    });
+      });
   });
-  describe("GET /api/reviews (queries)", () => {
-    test("200: responds with array of reviews sorted by any valid column, ascending and filtered to have specific category", () => {
-      return request(app)
-        .get("/api/reviews?sort_by=votes&order_by=ASC&category=dexterity")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body).toHaveLength(1);
-          expect(body).toBeSortedBy("votes", {
-            descending: false,
-            coerce: true,
-          });
-          body.forEach((review) => {
-            expect(review).toHaveProperty("owner"),
-              expect(review).toHaveProperty("title"),
-              expect(review).toHaveProperty("review_id"),
-              expect(review.category).toEqual("dexterity"),
-              expect(review).toHaveProperty("review_img_url"),
-              expect(review).toHaveProperty("created_at"),
-              expect(review).toHaveProperty("votes"),
-              expect(review).toHaveProperty("review_body"),
-              expect(review).toHaveProperty("designer"),
-              expect(review).toHaveProperty("comment_count");
-          });
+});
+describe("GET /api/reviews", () => {
+  test("Respond with status 200 and a array of reviews with the property created_at sorted in descending order as default", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveLength(13);
+        expect(body).toBeSortedBy("created_at", {
+          descending: true,
+          coerce: true,
         });
-    });
-    test("200: responds with array of reviews with only valid category and default order and sortby", () => {
-      return request(app)
-        .get("/api/reviews?category=euro game")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body).toHaveLength(1);
-          expect(body).toBeSortedBy("created_at", {
-            descending: true,
-            coerce: true,
-          });
-          body.forEach((review) => {
-            expect(review).toHaveProperty("owner"),
-              expect(review).toHaveProperty("title"),
-              expect(review).toHaveProperty("review_id"),
-              expect(review.category).toEqual("euro game"),
-              expect(review).toHaveProperty("review_img_url"),
-              expect(review).toHaveProperty("created_at"),
-              expect(review).toHaveProperty("votes"),
-              expect(review).toHaveProperty("review_body"),
-              expect(review).toHaveProperty("designer"),
-              expect(review).toHaveProperty("comment_count");
-          });
+        body.forEach((review) => {
+          expect(review).toHaveProperty("owner"),
+            expect(review).toHaveProperty("title"),
+            expect(review).toHaveProperty("review_id"),
+            expect(review).toHaveProperty("category"),
+            expect(review).toHaveProperty("review_img_url"),
+            expect(review).toHaveProperty("created_at"),
+            expect(review).toHaveProperty("votes"),
+            expect(review).toHaveProperty("review_body"),
+            expect(review).toHaveProperty("designer"),
+            expect(review).toHaveProperty("comment_count");
         });
-    });
-    test("200: responds with array of reviews sort by any valid column", () => {
-      return request(app)
-        .get("/api/reviews?sort_by=owner")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body).toHaveLength(13);
-          expect(body).toBeSortedBy("owner", {
-            descending: true,
-            coerce: true,
-          });
-          body.forEach((review) => {
-            expect(review).toHaveProperty("owner"),
-              expect(review).toHaveProperty("title"),
-              expect(review).toHaveProperty("review_id"),
-              expect(review).toHaveProperty("category"),
-              expect(review).toHaveProperty("review_img_url"),
-              expect(review).toHaveProperty("created_at"),
-              expect(review).toHaveProperty("votes"),
-              expect(review).toHaveProperty("review_body"),
-              expect(review).toHaveProperty("designer"),
-              expect(review).toHaveProperty("comment_count");
-          });
-        });
-    });
-    test("200: responds with array of reviews ordered by ASC with default sortby value", () => {
-      return request(app)
-        .get("/api/reviews?order_by=ASC")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body).toHaveLength(13);
-          expect(body).toBeSortedBy("created_at", {
-            descending: false,
-            coerce: true,
-          });
-          body.forEach((review) => {
-            expect(review).toHaveProperty("owner"),
-              expect(review).toHaveProperty("title"),
-              expect(review).toHaveProperty("review_id"),
-              expect(review).toHaveProperty("category"),
-              expect(review).toHaveProperty("review_img_url"),
-              expect(review).toHaveProperty("created_at"),
-              expect(review).toHaveProperty("votes"),
-              expect(review).toHaveProperty("review_body"),
-              expect(review).toHaveProperty("designer"),
-              expect(review).toHaveProperty("comment_count");
-          });
-        });
-    });
+      });
   });
-  describe("GET /api/reviews/:review_id/comments", () => {
-    test("Respond with status 200 and a array of comments from the review ID", () => {
-      const review_id = 2;
-      return request(app)
-        .get(`/api/reviews/${review_id}/comments`)
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.comments).toHaveLength(3);
-          body.comments.forEach((comment) => {
-            expect(comment).toHaveProperty("comment_id"),
-              expect(comment).toHaveProperty("votes"),
-              expect(comment).toHaveProperty("review_id"),
-              expect(comment).toHaveProperty("created_at"),
-              expect(comment).toHaveProperty("author"),
-              expect(comment).toHaveProperty("body");
-          });
+});
+describe("GET /api/reviews (queries)", () => {
+  test("200: responds with array of reviews sorted by any valid column, ascending and filtered to have specific category", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=votes&order_by=ASC&category=dexterity")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveLength(1);
+        expect(body).toBeSortedBy("votes", {
+          descending: false,
+          coerce: true,
         });
-    });
+        body.forEach((review) => {
+          expect(review).toHaveProperty("owner"),
+            expect(review).toHaveProperty("title"),
+            expect(review).toHaveProperty("review_id"),
+            expect(review.category).toEqual("dexterity"),
+            expect(review).toHaveProperty("review_img_url"),
+            expect(review).toHaveProperty("created_at"),
+            expect(review).toHaveProperty("votes"),
+            expect(review).toHaveProperty("review_body"),
+            expect(review).toHaveProperty("designer"),
+            expect(review).toHaveProperty("comment_count");
+        });
+      });
   });
-  describe("POST /api/reviews/:review_id/comments", () => {
-    test("Respond with status 201 and the posted comment", () => {
-      const review_id = 2;
-      const comment = {
-        username: "dav3rid",
-        body: "Hello this is a test review",
-      };
-      return request(app)
-        .post(`/api/reviews/${review_id}/comments`)
-        .send(comment)
-        .expect(201)
-        .then(({ body }) => {
-          expect(body.comment[0]).toEqual({
-            comment_id: 7,
-            body: "Hello this is a test review",
-            review_id: 2,
-            author: "dav3rid",
-            votes: 0,
-            created_at: expect.any(String),
-          });
+  test("200: responds with array of reviews with only valid category and default order and sortby", () => {
+    return request(app)
+      .get("/api/reviews?category=euro game")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveLength(1);
+        expect(body).toBeSortedBy("created_at", {
+          descending: true,
+          coerce: true,
         });
-    });
+        body.forEach((review) => {
+          expect(review).toHaveProperty("owner"),
+            expect(review).toHaveProperty("title"),
+            expect(review).toHaveProperty("review_id"),
+            expect(review.category).toEqual("euro game"),
+            expect(review).toHaveProperty("review_img_url"),
+            expect(review).toHaveProperty("created_at"),
+            expect(review).toHaveProperty("votes"),
+            expect(review).toHaveProperty("review_body"),
+            expect(review).toHaveProperty("designer"),
+            expect(review).toHaveProperty("comment_count");
+        });
+      });
   });
-  describe("DELETE /api/comments/:comment_id", () => {
-    test("Respond with status 204 and empty body", () => {
-      const comment_id = 1;
-      return request(app).delete(`/api/comments/${comment_id}`).expect(204);
-    });
-    test("Removes a comment from the database if id is correct", () => {
-      const comment_id = 1;
-      return request(app)
-        .delete(`/api/comments/${comment_id}`)
-        .expect(204)
-        .then(() => {
-          return connection.query(
-            "SELECT * FROM comments WHERE comment_id = 1"
-          );
-        })
-        .then((results) => {
-          expect(results.rows).toHaveLength(0);
+  test("200: responds with array of reviews sort by any valid column", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=owner")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveLength(13);
+        expect(body).toBeSortedBy("owner", {
+          descending: true,
+          coerce: true,
         });
-    });
+        body.forEach((review) => {
+          expect(review).toHaveProperty("owner"),
+            expect(review).toHaveProperty("title"),
+            expect(review).toHaveProperty("review_id"),
+            expect(review).toHaveProperty("category"),
+            expect(review).toHaveProperty("review_img_url"),
+            expect(review).toHaveProperty("created_at"),
+            expect(review).toHaveProperty("votes"),
+            expect(review).toHaveProperty("review_body"),
+            expect(review).toHaveProperty("designer"),
+            expect(review).toHaveProperty("comment_count");
+        });
+      });
+  });
+  test("200: responds with array of reviews ordered by ASC with default sortby value", () => {
+    return request(app)
+      .get("/api/reviews?order_by=ASC")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toHaveLength(13);
+        expect(body).toBeSortedBy("created_at", {
+          descending: false,
+          coerce: true,
+        });
+        body.forEach((review) => {
+          expect(review).toHaveProperty("owner"),
+            expect(review).toHaveProperty("title"),
+            expect(review).toHaveProperty("review_id"),
+            expect(review).toHaveProperty("category"),
+            expect(review).toHaveProperty("review_img_url"),
+            expect(review).toHaveProperty("created_at"),
+            expect(review).toHaveProperty("votes"),
+            expect(review).toHaveProperty("review_body"),
+            expect(review).toHaveProperty("designer"),
+            expect(review).toHaveProperty("comment_count");
+        });
+      });
+  });
+});
+describe("GET /api/reviews/:review_id/comments", () => {
+  test("Respond with status 200 and a array of comments from the review ID", () => {
+    const review_id = 2;
+    return request(app)
+      .get(`/api/reviews/${review_id}/comments`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toHaveLength(3);
+        body.comments.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id"),
+            expect(comment).toHaveProperty("votes"),
+            expect(comment).toHaveProperty("review_id"),
+            expect(comment).toHaveProperty("created_at"),
+            expect(comment).toHaveProperty("author"),
+            expect(comment).toHaveProperty("body");
+        });
+      });
+  });
+});
+describe("POST /api/reviews/:review_id/comments", () => {
+  test("Respond with status 201 and the posted comment", () => {
+    const review_id = 2;
+    const comment = {
+      username: "dav3rid",
+      body: "Hello this is a test review",
+    };
+    return request(app)
+      .post(`/api/reviews/${review_id}/comments`)
+      .send(comment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment[0]).toEqual({
+          comment_id: 7,
+          body: "Hello this is a test review",
+          review_id: 2,
+          author: "dav3rid",
+          votes: 0,
+          created_at: expect.any(String),
+        });
+      });
+  });
+});
+describe("DELETE /api/comments/:comment_id", () => {
+  test("Respond with status 204 and empty body", () => {
+    const comment_id = 1;
+    return request(app).delete(`/api/comments/${comment_id}`).expect(204);
+  });
+  test("Removes a comment from the database if id is correct", () => {
+    const comment_id = 1;
+    return request(app)
+      .delete(`/api/comments/${comment_id}`)
+      .expect(204)
+      .then(() => {
+        return connection.query("SELECT * FROM comments WHERE comment_id = 1");
+      })
+      .then((results) => {
+        expect(results.rows).toHaveLength(0);
+      });
   });
 });
 

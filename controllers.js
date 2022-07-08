@@ -7,8 +7,9 @@ const {
   selectReviewComments,
   insertComment,
   removeComment,
+  selectJSON,
 } = require("./models");
-const { request } = require("./app");
+const endpoints = require("./endpoints.json");
 
 exports.getCategories = (req, res, next) => {
   selectCategories()
@@ -96,4 +97,8 @@ exports.deleteComment = (req, res, next) => {
     .catch((err) => {
       next(err);
     });
+};
+
+exports.getJSON = (req, res, next) => {
+  res.status(200).send({ endpoints });
 };
