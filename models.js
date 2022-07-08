@@ -1,5 +1,6 @@
 const e = require("express");
 const connection = require("./db/connection");
+const { checkCategoryExists } = require("./query-utils")
 
 exports.selectCategories = () => {
     return connection.query("SELECT * FROM categories;").then((results) => {
@@ -8,6 +9,7 @@ exports.selectCategories = () => {
 };
 
 exports.selectReview = (reviewID) => {
+
     return connection.query(`
     SELECT reviews.review_id, reviews.title, reviews.designer, reviews.owner,
     reviews.review_img_url, reviews.review_body, reviews.category, reviews.created_at,
@@ -61,19 +63,9 @@ exports.selectReviews = (sort_by = "created_at", order_by = "DESC", category) =>
     LEFT JOIN comments
     ON comments.review_id = reviews.review_id`;
 
-
-    function categoryExist(category) {
-        return connection.query(`SELECT * FROM categories WHERE slug = $1;`, [category]).then((results) => {
-            if (results.rows.length !== 0) {
-                return true;
-            };
-            return false
-        })
-    };
-
-
-    return categoryExist(category)
+    return checkCategoryExists(category)
     .then((results) => {
+        console.log(results)
         if(category !== undefined) {
             if (results === true){
                 query += ` WHERE reviews.category='${category}'`
